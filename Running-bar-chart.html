@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .container .chart {
+                background-color: rgb(243, 243, 243);
+                height: 100px;
+                width: 193px;
+                margin-top: 5px;
+                position: relative;
+            }
+            .container .bar-holder {
+                position: absolute;
+                bottom: 0px;
+            }
+            .container .bar {
+                background-color: #99c2ff;
+                width: 30px;
+                height: 0px;
+                margin: 1px;
+                display: inline-block;
+                transition: width 1s;
+            }
+            .container .ave-line {
+                border-top: 1px dotted white;
+                width: 100%;
+                position: absolute;
+                top: 95px;
+                transition: top 0.5s;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class = "container">
+            <div class = "chart">
+                <div class = "bar-holder"></div>
+                <div class = "ave-line"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+
+            function updateChart(){
+                var value = Math.round(Math.random() * 100);
+                // find bar hieight
+                var h = value * (95 / maxValue);
+                // trim the values to protect display format
+                h = Math.min(Math.max(h, 0), 95);
+
+                if (barsCount > 5){
+                    var barToGo = document.querySelector(".container .bar");
+                    barToGo.style.width = "0px";
+                    barToGo.addEventListener("transitionend", function() {
+                        barHolder.removeChild(barToGo);
+                        data.shift();
+                        barsCount--;
+                        if (barsCount < 6){
+                            addBar(h);
+                        }
+                    })
+                } else {
+                    addBar(h);
+                }
+            }
+
+            function addBar(h){
+                // create new bar
+                var newBar = document.createElement("div");
+                newBar.classList.add("bar");
+                newBar.style.height = (h + "px");
+                barHolder.appendChild(newBar);
+
+                barsCount++;
+                data.push(h);
+                // set average line
+                var th = 0;
+                for (var i = 0; i < data.length; i++){
+                    th += data[i];
+                }
+                var ah = th / data.length;
+                // determine high/low/medium
+                var color = (ah < 30 ? "green" : (ah > 65 ? "red" : "blue"));
+                aveLine.style.top = (95-ah) + "px";
+                aveLine.style.borderColor = color;
+            }
+
+            // main body
+            var data = [];
+            var barsCount = 0;
+            var maxValue = 100; 
+            var barHolder = document.querySelector(".container .bar-holder");
+            var aveLine = document.querySelector(".container .ave-line");
+            updateChart();
+            var myTimer = window.setInterval(updateChart, 3000); 
+        </script>
+    </body>
+</html>
